@@ -3,24 +3,28 @@ import { GetAllCurrencies } from '../services/ConvertCurrencies'
 import '../styles/main.css'
 
 export const CurrencyInput = () => {
+    const [currencyCodes, setCurrencyCodes] = useState<Map<string, string>>(new Map())
 
-    const [rates, setRates] = useState<string[]>([])
-
-    useEffect(()=>{
+    useEffect(() => {
         const fetchData = async () => {
-            const result = await GetAllCurrencies()
-            if(result!=undefined) setRates(result)
+          const result = await GetAllCurrencies()
+          if (result !== undefined) {
+            const currencyMap = new Map()
+            result.forEach((currency: any) => currencyMap.set(currency.code, currency.name))
+            setCurrencyCodes(currencyMap)
+          }
         }
         fetchData()
-    }, )
+      }, [])
+    
 
     return (
         <div className="text-center">
             <div className="m-4">
             <label>Select the currency: </label>
             <select name="currency-1" id="">
-                {rates!= undefined && rates?.map((rate, index) => (
-                    <option value={rate}>{rate}</option>
+                {[...currencyCodes.entries()].map(([code, name], index)=>(
+                    <option key={code} value={code}>{name}</option>
                 ))}
             </select>
             </div>
